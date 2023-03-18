@@ -11,13 +11,24 @@ function createPromises(e) {
   let amount = e.currentTarget.amount.valueAsNumber;
 
   for (let position = 0; position < amount; position++) {
-    createPromise(position, delay);
+    createPromise(position, delay)
+      .then(({ position, delay }) => {
+        Notiflix.Notify.success(
+          `✅ Fulfilled promise ${position} in ${delay}ms`
+        );
+      })
+      .catch(({ position, delay }) => {
+        Notiflix.Notify.warning(
+          `❌ Rejected promise ${position} in ${delay}ms`
+        );
+      });
+
     delay += step;
   }
 }
 
 function createPromise(position, delay) {
-  const promise = new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const shouldResolve = Math.random() > 0.3;
 
     setTimeout(() => {
@@ -28,11 +39,4 @@ function createPromise(position, delay) {
       }
     }, delay);
   });
-  promise
-    .then(({ position, delay }) => {
-      Notiflix.Notify.success(`✅ Fulfilled promise ${position} in ${delay}ms`);
-    })
-    .catch(({ position, delay }) => {
-      Notiflix.Notify.warning(`❌ Rejected promise ${position} in ${delay}ms`);
-    });
 }

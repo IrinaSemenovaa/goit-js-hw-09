@@ -24,18 +24,17 @@ const fp = flatpickr(refs.input, {
   time_24hr: true,
   minuteIncrement: 1,
   onClose(selectedDates) {
-    console.log(selectedDates[0]);
+    const chosenDate = selectedDates[0];
 
-    const currentTime = new Date();
+    const currentTime = Date.now();
 
-    if (selectedDates[0] < currentTime) {
+    if (chosenDate < currentTime) {
       refs.startBtn.disabled = true;
       Notiflix.Notify.failure('Please choose a date in the future');
       return;
     }
-    if (selectedDates[0] > currentTime) {
-      refs.startBtn.disabled = false;
-    }
+
+    refs.startBtn.disabled = false;
   },
 });
 
@@ -64,28 +63,29 @@ function handleTimerStart() {
   const selectedDate = fp.selectedDates[0];
 
   timerId = setInterval(() => {
-    const startTime = new Date();
+    const startTime = Date.now();
     const countdown = selectedDate - startTime;
     refs.startBtn.disabled = true;
 
     if (countdown < 0) {
       clearInterval(timerId);
 
-      setTimeout(successMessage, 500);
+      successMessage();
       return;
     }
     showCountdown(convertMs(countdown));
   }, 1000);
 }
+
+function successMessage() {
+  Notiflix.Notify.success('Time is up!');
+}
+
 function showCountdown({ days, hours, minutes, seconds }) {
   refs.daysTimer.textContent = addLeadingZero(days);
   refs.hoursTimer.textContent = addLeadingZero(hours);
   refs.minutesTimer.textContent = addLeadingZero(minutes);
   refs.secondsTimer.textContent = addLeadingZero(seconds);
-}
-
-function successMessage() {
-  Notiflix.Notify.success('Time is up!');
 }
 
 Notiflix.Notify.init({
